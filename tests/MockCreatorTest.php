@@ -2,6 +2,7 @@
 
 namespace SyntaxErro\Tests\YMock;
 
+use SyntaxErro\YMock\Configuration\Configuration;
 use SyntaxErro\YMock\Configuration\RecursiveConfiguration;
 use SyntaxErro\YMock\MockCreator;
 use SyntaxErro\YMock\TestsUtils\FakeServiceContainer;
@@ -78,5 +79,37 @@ class MockCreatorTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
+    /**
+     * @throws \SyntaxErro\YMock\Exception\InaccessibleCollectionElementException
+     */
+    public function testCreatingMocksFromYml()
+    {
+        $mockCreator = new MockCreator($this);
 
+        $configuration = new Configuration(__DIR__.'/Resources/sample_configuration.yml');
+        $mockCreator->setConfiguration($configuration);
+
+        $mocks = $mockCreator->getMocks();
+        $badQueryDatabaseConnection = $mocks->get('bad_query_database_connection');
+
+        $this->assertNotNull($badQueryDatabaseConnection);
+        $this->assertInstanceOf(\PDO::class, $badQueryDatabaseConnection);
+
+        $badQueryResult = $badQueryDatabaseConnection->query('SELECT * FROM users');
+        $this->assertFalse($badQueryResult);
+
+        /** @var \PDO $validQueryDatabaseConnection */
+        $validQueryDatabaseConnection = $mocks->get('valid_query_database_connection');
+        $this->assertNotNull($badQueryDatabaseConnection);
+        $this->assertInstanceOf(\PDO::class, $validQueryDatabaseConnection);
+
+        /** @var \PDOStatement $validQueryResultStatement */
+        $validQueryResultStatement = $validQueryDatabaseConnection->query('SELECT * FROM users');
+        $this->assertNotNull($validQueryResultStatement);
+        $this->assertInstanceOf(\PDOStatement::class, $validQueryResultStatement);
+
+        $validQueryResult = $validQueryResultStatement->fetchAll();
+        $this->assertTrue(is_array($validQueryResult));
+        $this->assertEquals([0, 1, 2], $validQueryResult);
+    }
 }

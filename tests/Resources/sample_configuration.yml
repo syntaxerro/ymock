@@ -1,0 +1,15 @@
+bad_query_database_connection:
+  class: "\\PDO"
+  disable_original_constructor: true
+  methods:
+    query: false
+
+valid_query_database_connection:
+  class: "\\PDO"
+  disable_original_constructor: true
+  methods:
+    query:
+      class: "\\PDOStatement"
+      disable_original_constructor: true
+      methods:
+        fetchAll: [0, 1, 2]

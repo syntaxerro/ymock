@@ -5,6 +5,7 @@ namespace SyntaxErro\YMock;
 use SyntaxErro\YMock\Configuration\ConfigurationInterface;
 use SyntaxErro\YMock\Configuration\RecursiveConfiguration;
 use SyntaxErro\YMock\Exception\InvalidConfigException;
+use SyntaxErro\YMock\Utils\ArrayHelper;
 
 class MockCreator
 {
@@ -39,6 +40,7 @@ class MockCreator
         $this->createMocksPrototypes($configuration, $mocksSourceArray);
 
         $this->mocks->setMocks($mocksSourceArray);
+
         return $this;
     }
 
@@ -55,7 +57,7 @@ class MockCreator
             $mockConfig = $configuration->getMainConfigKeyChildren($key);
 
             if(!isset($mockConfig['class'])) {
-                return;
+                continue;
             }
             $mockBuilder = $this->testCase->getMockBuilder($mockConfig['class']);
 
@@ -114,7 +116,7 @@ class MockCreator
 
                 $this->configureReturnedValues($mockConfig['methods'], $mock);
                 $sourceArray[$key] = $mock;
-                return;
+                continue;
             }
 
             $sourceArray[$key] = $mockBuilder->getMock();
@@ -131,7 +133,7 @@ class MockCreator
     private function configureReturnedValues(array $methods, \PHPUnit_Framework_MockObject_MockObject $mock)
     {
         foreach($methods as $name => $configOrReturnedValue) {
-            if(is_array($configOrReturnedValue)) {
+            if(is_array($configOrReturnedValue) && ArrayHelper::isAssoc($configOrReturnedValue)) {
                 $recursiveMockBuilder = new MockCreator($this->testCase);
 
                 if (isset($configOrReturnedValue['class'])) {
