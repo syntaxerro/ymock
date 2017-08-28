@@ -155,6 +155,6 @@ class MocksCollection implements \Iterator
             );
         }
 
-        return $this->mocks[0];
+        return array_values($this->mocks)[0];
     }
 }

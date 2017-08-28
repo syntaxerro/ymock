@@ -130,14 +130,12 @@ class MockCreator
      */
     private function configureReturnedValues(array $methods, \PHPUnit_Framework_MockObject_MockObject $mock)
     {
-        $i=0;
-
         foreach($methods as $name => $configOrReturnedValue) {
             if(is_array($configOrReturnedValue)) {
                 $recursiveMockBuilder = new MockCreator($this->testCase);
 
-                if (isset($configOrReturnedValue['class']) && $i++ > 0) {
-                    $recursiveConfiguration = new RecursiveConfiguration($configOrReturnedValue);
+                if (isset($configOrReturnedValue['class'])) {
+                    $recursiveConfiguration = new RecursiveConfiguration([$name => $configOrReturnedValue]);
                     $recursiveMockBuilder->setConfiguration($recursiveConfiguration);
 
                     $mock->method($name)->willReturn($recursiveMockBuilder->getMocks()->first());
