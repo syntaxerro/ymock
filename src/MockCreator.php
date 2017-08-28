@@ -148,8 +148,6 @@ class MockCreator
             }  else {
                 $mock->method($name)->willReturn($configOrReturnedValue);
             }
-
-            $this->mocks->addMock($mock, $name);
         }
     }
 
