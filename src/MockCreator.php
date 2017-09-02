@@ -3,9 +3,8 @@
 namespace SyntaxErro\YMock;
 
 use SyntaxErro\YMock\Configuration\ConfigurationInterface;
-use SyntaxErro\YMock\Configuration\RecursiveConfiguration;
-use SyntaxErro\YMock\Exception\InvalidConfigException;
-use SyntaxErro\YMock\Utils\ArrayHelper;
+use SyntaxErro\YMock\Creator\MockPrototypeCreator;
+use SyntaxErro\YMock\Creator\PrototypeCreatorArguments;
 
 class MockCreator
 {
@@ -37,121 +36,15 @@ class MockCreator
     {
         $mocksSourceArray = [];
 
-        $this->createMocksPrototypes($configuration, $mocksSourceArray);
+        $creator = new MockPrototypeCreator(
+            PrototypeCreatorArguments::create($this->testCase, $configuration)
+        );
+        $creator->createMocksPrototypes($mocksSourceArray);
 
         $this->mocks->setMocks($mocksSourceArray);
-
         return $this;
     }
 
-
-    /**
-     * @param ConfigurationInterface $configuration
-     * @param array $sourceArray
-     * @throws Exception\ReadConfigException
-     * @throws InvalidConfigException
-     */
-    private function createMocksPrototypes(ConfigurationInterface $configuration, &$sourceArray)
-    {
-        foreach($configuration->getMainConfigKeys() as $key) {
-            $mockConfig = $configuration->getMainConfigKeyChildren($key);
-
-            if(!isset($mockConfig['class'])) {
-                continue;
-            }
-            $mockBuilder = $this->testCase->getMockBuilder($mockConfig['class']);
-
-            if(isset($mockConfig['disable_original_constructor']) && $mockConfig['disable_original_constructor']) {
-                $mockBuilder->disableOriginalConstructor();
-            }
-
-            if(isset($mockConfig['disable_original_clone']) && $mockConfig['disable_original_clone']) {
-                $mockBuilder->disableOriginalClone();
-            }
-
-            if(isset($mockConfig['disable_argument_cloning']) && $mockConfig['disable_argument_cloning']) {
-                $mockBuilder->disableArgumentCloning();
-            }
-
-            if(isset($mockConfig['disable_proxying_to_original_methods']) && $mockConfig['disable_proxying_to_original_methods']) {
-                $mockBuilder->disableProxyingToOriginalMethods();
-            }
-
-
-            if(isset($mockConfig['constructor_args'])) {
-                if(!is_array($mockConfig['constructor_args'])) {
-                    throw new InvalidConfigException(
-                        sprintf('Mock "%s" constructor arguments must be an array!', $key)
-                    );
-                }
-
-                if(isset($mockConfig['disable_original_constructor'])) {
-                    throw new InvalidConfigException(
-                        sprintf('Mock "%s" cannot set constructor argument with disabled original constructor!', $key)
-                    );
-                }
-
-                $mockBuilder->setConstructorArgs($mockConfig['constructor_args']);
-            }
-
-            if(isset($mockConfig['proxy_target'])) {
-                if(!is_object($mockConfig['proxy_target'])) {
-                    throw new InvalidConfigException(
-                        sprintf('Mock "%s" constructor arguments must be an object!', $key)
-                    );
-                }
-
-                $mockBuilder->setProxyTarget($mockConfig['proxy_target']);
-            }
-
-            if(isset($mockConfig['methods'])) {
-                if(!is_array($mockConfig['methods'])) {
-                    throw new InvalidConfigException(
-                        sprintf('Configured methods for mock "%s" must be an array!', $key)
-                    );
-                }
-
-                $mockBuilder->setMethods(array_keys($mockConfig['methods']));
-                $mock = $mockBuilder->getMock();
-
-                $this->configureReturnedValues($mockConfig['methods'], $mock);
-                $sourceArray[$key] = $mock;
-                continue;
-            }
-
-            $sourceArray[$key] = $mockBuilder->getMock();
-        }
-    }
-
-    /**
-     * Recursive configure returned values of mock
-     *
-     * @param array $methods
-     * @param \PHPUnit_Framework_MockObject_MockObject $mock
-     * @throws Exception\InaccessibleCollectionElementException
-     */
-    private function configureReturnedValues(array $methods, \PHPUnit_Framework_MockObject_MockObject $mock)
-    {
-        foreach($methods as $name => $configOrReturnedValue) {
-            if(is_array($configOrReturnedValue) && ArrayHelper::isAssoc($configOrReturnedValue)) {
-                $recursiveMockBuilder = new MockCreator($this->testCase);
-
-                if (isset($configOrReturnedValue['class'])) {
-                    $recursiveConfiguration = new RecursiveConfiguration([$name => $configOrReturnedValue]);
-                    $recursiveMockBuilder->setConfiguration($recursiveConfiguration);
-
-                    $mock->method($name)->willReturn($recursiveMockBuilder->getMocks()->first());
-                } else {
-                    $recursiveConfiguration = new RecursiveConfiguration($configOrReturnedValue);
-                    $recursiveMockBuilder->setConfiguration($recursiveConfiguration);
-
-                    $mock->method($name)->willReturn($recursiveMockBuilder->getMocks()->toArray());
-                }
-            }  else {
-                $mock->method($name)->willReturn($configOrReturnedValue);
-            }
-        }
-    }
 
     /**
      * @return MocksCollection

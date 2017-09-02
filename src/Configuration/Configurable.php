@@ -29,7 +29,7 @@ trait Configurable
 
     /**
      * @param $mainKey
-     * @return mixed
+     * @return array
      * @throws ReadConfigException
      */
     public function getMainConfigKeyChildren($mainKey)
