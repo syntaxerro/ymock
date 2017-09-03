@@ -1,3 +1,4 @@
+
 {
     "name": "syntaxerro/ymock",
     "description": "Create PHPUnit mocks with YAML format",
@@ -19,13 +20,15 @@
     "autoload": {
         "psr-4": {
             "SyntaxErro\\YMock\\": "./src",
-            "SyntaxErro\\Tests\\YMock": "./vendor"
+            "SyntaxErro\\Tests\\YMock\\": "./vendor"
         }
     },
 
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "0.1-dev"
         }
-    }
+    },
+
+    "minimum-stability": "dev"
 }
