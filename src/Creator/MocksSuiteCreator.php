@@ -3,7 +3,7 @@
 namespace SyntaxErro\YMock\Creator;
 
 use SyntaxErro\YMock\Configuration\ConfigurationInterface;
-use SyntaxErro\YMock\MocksCollection;
+use SyntaxErro\YMock\Utils\MocksCollection;
 
 class MocksSuiteCreator
 {

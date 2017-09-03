@@ -4,6 +4,7 @@ namespace SyntaxErro\YMock;
 
 use SyntaxErro\YMock\Configuration\Configuration;
 use SyntaxErro\YMock\Creator\MocksSuiteCreator;
+use SyntaxErro\YMock\Utils\MocksCollection;
 
 class YMock
 {

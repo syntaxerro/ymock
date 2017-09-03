@@ -1,6 +1,6 @@
 <?php
 
-namespace SyntaxErro\YMock;
+namespace SyntaxErro\YMock\Utils;
 
 use SyntaxErro\YMock\Exception\InaccessibleCollectionElementException;
 
