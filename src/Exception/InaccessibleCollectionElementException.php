@@ -2,6 +2,6 @@
 
 namespace SyntaxErro\YMock\Exception;
 
-class InaccessibleCollectionElementException extends \Exception
+class InaccessibleCollectionElementException extends YMockException
 {
 }

@@ -2,6 +2,6 @@
 
 namespace SyntaxErro\YMock\Exception;
 
-class ReadConfigException extends YMockException
+abstract class YMockException extends \Exception
 {
 }
