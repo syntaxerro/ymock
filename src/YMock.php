@@ -3,6 +3,7 @@
 namespace SyntaxErro\YMock;
 
 use SyntaxErro\YMock\Configuration\Configuration;
+use SyntaxErro\YMock\Creator\MocksSuiteCreator;
 
 class YMock
 {
@@ -34,7 +35,7 @@ class YMock
      */
     private function createMocks(Configuration $configuration)
     {
-        $mockCreator = new MockCreator($this->testCase);
+        $mockCreator = new MocksSuiteCreator($this->testCase);
         $mockCreator->setConfiguration($configuration);
 
         $this->mocks = $mockCreator->getMocks();

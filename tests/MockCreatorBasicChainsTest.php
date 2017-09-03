@@ -4,7 +4,7 @@ namespace SyntaxErro\Tests\YMock;
 
 use SyntaxErro\YMock\Configuration\Configuration;
 use SyntaxErro\YMock\Configuration\RecursiveConfiguration;
-use SyntaxErro\YMock\MockCreator;
+use SyntaxErro\YMock\Creator\MocksSuiteCreator;
 use SyntaxErro\YMock\TestsUtils\FakeServiceContainer;
 use SyntaxErro\YMock\TestsUtils\FakeEntityRepository;
 use SyntaxErro\YMock\TestsUtils\FakeEntity;
@@ -21,7 +21,7 @@ class MockCreatorBasicChainsTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreatingMocksWithArrayConfiguration()
     {
-        $mockCreator = new MockCreator($this);
+        $mockCreator = new MocksSuiteCreator($this);
 
         $mockCreator->setConfiguration(
             $this->createConfigurationForMockWithReturnedArrayByOneOfConfiguredMethod()
@@ -84,7 +84,7 @@ class MockCreatorBasicChainsTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreatingMocksFromYml()
     {
-        $mockCreator = new MockCreator($this);
+        $mockCreator = new MocksSuiteCreator($this);
 
         $configuration = new Configuration(__DIR__.'/Resources/sample_configuration.yml');
         $mockCreator->setConfiguration($configuration);

@@ -1,12 +1,11 @@
 <?php
 
-namespace SyntaxErro\YMock;
+namespace SyntaxErro\YMock\Creator;
 
 use SyntaxErro\YMock\Configuration\ConfigurationInterface;
-use SyntaxErro\YMock\Creator\MockPrototypeCreator;
-use SyntaxErro\YMock\Creator\PrototypeCreatorArguments;
+use SyntaxErro\YMock\MocksCollection;
 
-class MockCreator
+class MocksSuiteCreator
 {
     /**
      * @var MocksCollection
@@ -30,7 +29,7 @@ class MockCreator
 
     /**
      * @param ConfigurationInterface $configuration
-     * @return MockCreator
+     * @return MocksSuiteCreator
      */
     public function setConfiguration(ConfigurationInterface $configuration)
     {
