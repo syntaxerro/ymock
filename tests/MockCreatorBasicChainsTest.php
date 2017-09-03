@@ -9,7 +9,7 @@ use SyntaxErro\YMock\TestsUtils\FakeServiceContainer;
 use SyntaxErro\YMock\TestsUtils\FakeEntityRepository;
 use SyntaxErro\YMock\TestsUtils\FakeEntity;
 
-class MockCreatorTest extends \PHPUnit_Framework_TestCase
+class MockCreatorBasicChainsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Any number allow
@@ -90,7 +90,7 @@ class MockCreatorTest extends \PHPUnit_Framework_TestCase
         $mockCreator->setConfiguration($configuration);
 
         $mocks = $mockCreator->getMocks();
-        $badQueryDatabaseConnection = $mocks->get('bad_query_database_connection');
+        $badQueryDatabaseConnection = $mocks->get('BasicChains___bad_query_database_connection');
 
         $this->assertNotNull($badQueryDatabaseConnection);
         $this->assertInstanceOf(\PDO::class, $badQueryDatabaseConnection);
@@ -99,7 +99,7 @@ class MockCreatorTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($badQueryResult);
 
         /** @var \PDO $validQueryDatabaseConnection */
-        $validQueryDatabaseConnection = $mocks->get('valid_query_database_connection');
+        $validQueryDatabaseConnection = $mocks->get('BasicChains___valid_query_database_connection');
         $this->assertNotNull($badQueryDatabaseConnection);
         $this->assertInstanceOf(\PDO::class, $validQueryDatabaseConnection);
 

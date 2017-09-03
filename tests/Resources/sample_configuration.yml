@@ -1,10 +1,12 @@
-bad_query_database_connection:
+# Basic chains tests
+
+BasicChains___bad_query_database_connection:
   class: "\\PDO"
   disable_original_constructor: true
   methods:
     query: false
 
-valid_query_database_connection:
+BasicChains___valid_query_database_connection:
   class: "\\PDO"
   disable_original_constructor: true
   methods:
@@ -13,3 +15,6 @@ valid_query_database_connection:
       disable_original_constructor: true
       methods:
         fetchAll: [0, 1, 2]
+
+# Return array map
+

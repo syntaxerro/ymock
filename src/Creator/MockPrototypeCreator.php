@@ -2,6 +2,7 @@
 
 namespace SyntaxErro\YMock\Creator;
 
+use SyntaxErro\YMock\Behavior\MockBehaviorConfigurator;
 use SyntaxErro\YMock\Configuration\ConfigurationInterface;
 use SyntaxErro\YMock\Exception\InvalidConfigException;
 use SyntaxErro\YMock\Exception\ReadConfigException;
@@ -98,8 +99,8 @@ class MockPrototypeCreator
                 $mockBuilder->setMethods(array_keys($mockConfig['methods']));
                 $mock = $mockBuilder->getMock();
 
-                $returnedValuesConfigurator = new ReturnedValuesConfigurator($this->testCase, $mock);
-                $returnedValuesConfigurator->configureReturnedValues($mockConfig['methods']);
+                $returnedValuesConfigurator = new MockBehaviorConfigurator($this->testCase, $mock);
+                $returnedValuesConfigurator->configureBehavior($mockConfig['methods']);
                 $sourceArray[$key] = $mock;
                 continue;
             }
