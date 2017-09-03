@@ -2,7 +2,7 @@
 ----
 ### Installation
 ```bash
-composer require syntaxerro/ymock
+composer require syntaxerro/ymock 0.1.x-dev
 ```
 ----
 ### Configuration
