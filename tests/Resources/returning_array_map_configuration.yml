@@ -1,0 +1,9 @@
+# Return array map
+ArrayMap___bad_query_database_connection:
+  class: "\\PDO"
+  disable_original_constructor: true
+  methods:
+    exec:
+      _returning_map:
+        - ["SELECT * FROM users", "users_result"]
+        - ["SELECT * FROM configuration", "configuration_result"]

@@ -2,9 +2,13 @@
 
 namespace SyntaxErro\YMock\Behavior;
 
+use SyntaxErro\YMock\Behavior\Extension\ReturningClassicMock;
+use SyntaxErro\YMock\Configuration\Extensions;
+use SyntaxErro\YMock\Configuration\RecursiveConfiguration;
 use SyntaxErro\YMock\Exception\BehaviorException;
 use SyntaxErro\YMock\Utils\ArrayHelper;
 use SyntaxErro\YMock\Utils\ClassFinder;
+use SyntaxErro\YMock\Creator\MocksSuiteCreator;
 
 class MockBehaviorConfigurator
 {
@@ -23,18 +27,23 @@ class MockBehaviorConfigurator
      */
     private $preloadedExtensionsClasses = [];
 
-    const EXTENSIONS_NAMESPACE = 'SyntaxErro\\YMock\\Behavior\\Extension';
+    /**
+     * @var bool
+     */
+    private $isRecursive = true;
 
     /**
      * ReturnedValuesConfigurator constructor.
      * @param \PHPUnit_Framework_TestCase $testCase
      * @param \PHPUnit_Framework_MockObject_MockObject $mock
+     * @param bool $isRecursive
      */
-    public function __construct(\PHPUnit_Framework_TestCase $testCase, \PHPUnit_Framework_MockObject_MockObject $mock)
+    public function __construct(\PHPUnit_Framework_TestCase $testCase, \PHPUnit_Framework_MockObject_MockObject $mock, $isRecursive = true)
     {
         $this->mock = $mock;
         $this->testCase = $testCase;
-        $this->preloadedExtensionsClasses = ClassFinder::getClassesInNamespace(self::EXTENSIONS_NAMESPACE);
+        $this->isRecursive = $isRecursive;
+        $this->preloadedExtensionsClasses = ClassFinder::getClassesInNamespace(Extensions::EXTENSIONS_NAMESPACE);
     }
 
     /**
@@ -49,14 +58,17 @@ class MockBehaviorConfigurator
             if(is_array($configOrReturnedValue) && ArrayHelper::isAssoc($configOrReturnedValue)) {
                 $loadedExtension = $this->loadEnabledExtension($methods);
                 if($loadedExtension === null) {
-                    throw new BehaviorException(
-                        sprintf('Cannot load behavior for mock "%s"', get_class($this->mock))
-                    );
+                    $recursiveMockBuilder = new MocksSuiteCreator($this->testCase);
+
+                    $recursiveConfiguration = new RecursiveConfiguration($configOrReturnedValue);
+                    $recursiveMockBuilder->setConfiguration($recursiveConfiguration);
+
+                    $this->mock->method($name)->willReturn($recursiveMockBuilder->getMocks()->toArray());
+                    continue;
                 }
 
                 $loadedExtension->configure($configOrReturnedValue, $name);
-
-            }  else {
+            } else {
                 $this->mock->method($name)->willReturn($configOrReturnedValue);
             }
         }
@@ -106,7 +118,7 @@ class MockBehaviorConfigurator
                 );
             }
 
-            if($extensionInstance->isEnabled($config)) {
+            if($extensionInstance->isEnabled($config) || ($extensionInstance instanceof ReturningClassicMock && !$this->isRecursive)) {
                 $enabled = $extensionInstance;
             }
         }

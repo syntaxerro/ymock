@@ -2,6 +2,10 @@
 
 namespace SyntaxErro\YMock\Behavior;
 
+use SyntaxErro\YMock\Creator\MocksSuiteCreator;
+use SyntaxErro\YMock\Configuration\RecursiveConfiguration;
+use SyntaxErro\YMock\Exception\BehaviorException;
+
 abstract class AbstractExtension
 {
     /**
@@ -26,19 +30,42 @@ abstract class AbstractExtension
     }
 
     /**
+     * Create, configure and return recursive MockSuiteCreator
+     *
+     * @param array $configuration
+     * @param $method
+     * @return MocksSuiteCreator
+     */
+    protected function getMockSuiteCreator(array $configuration, $method)
+    {
+        $recursiveMockBuilder = new MocksSuiteCreator($this->testCase);
+
+        $recursiveConfiguration = new RecursiveConfiguration([$method => $configuration]);
+        $recursiveMockBuilder->setConfiguration($recursiveConfiguration);
+
+        return $recursiveMockBuilder;
+    }
+
+    /**
      * Check extension is enabled
      *
      * @param array $configuration
      * @return boolean
+     *
+     * @throws BehaviorException
      */
-    abstract public function isEnabled(array $configuration);
+    public function isEnabled(array $configuration)
+    {
+        return isset($configuration[$this->getName()]);
+    }
+
+    abstract public function configure(array $configuration, $returningMethodName);
+
 
     /**
-     * Configure mock behavior (method or expectations) with given configuration
+     * Return configuration key which enable extension
      *
-     * @param array $configuration
-     * @param string $returningMethodName
-     * @return
+     * @return string
      */
-    abstract public function configure(array $configuration, $returningMethodName);
+    abstract public function getName();
 }

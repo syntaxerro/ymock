@@ -2,12 +2,12 @@
 
 namespace SyntaxErro\Tests\YMock;
 
-use SyntaxErro\YMock\Configuration\Configuration;
 use SyntaxErro\YMock\Configuration\RecursiveConfiguration;
 use SyntaxErro\YMock\Creator\MocksSuiteCreator;
 use SyntaxErro\YMock\TestsUtils\FakeServiceContainer;
 use SyntaxErro\YMock\TestsUtils\FakeEntityRepository;
 use SyntaxErro\YMock\TestsUtils\FakeEntity;
+use SyntaxErro\YMock\TestsUtils\TestUtils;
 
 class MockCreatorBasicChainsTest extends \PHPUnit_Framework_TestCase
 {
@@ -82,14 +82,10 @@ class MockCreatorBasicChainsTest extends \PHPUnit_Framework_TestCase
     /**
      * @throws \SyntaxErro\YMock\Exception\InaccessibleCollectionElementException
      */
-    public function testCreatingMocksFromYml()
+    public function testCreatingBasicMocksFromYml()
     {
-        $mockCreator = new MocksSuiteCreator($this);
 
-        $configuration = new Configuration(__DIR__.'/Resources/sample_configuration.yml');
-        $mockCreator->setConfiguration($configuration);
-
-        $mocks = $mockCreator->getMocks();
+        $mocks = TestUtils::configureMockCreatorWithConfigurationPath($this, __DIR__.'/Resources/sample_configuration.yml');
         $badQueryDatabaseConnection = $mocks->get('BasicChains___bad_query_database_connection');
 
         $this->assertNotNull($badQueryDatabaseConnection);
